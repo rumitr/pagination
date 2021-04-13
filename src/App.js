@@ -9,6 +9,7 @@ import usePaginate from "./hooks/usePaginate";
 
 const pageOptions = {
   defaultPageSize: 5,
+  pageSizeOptions: [5, 10, 20],
 };
 
 function App() {

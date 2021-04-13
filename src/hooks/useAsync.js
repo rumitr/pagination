@@ -13,7 +13,6 @@ const useAsync = (asyncFunction, immediate = true) => {
     return asyncFunction()
       .then((response) => {
         setValue(response);
-        console.log(response, "response");
         setStatus("success");
       })
       .catch((error) => {

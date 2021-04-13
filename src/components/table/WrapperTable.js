@@ -10,6 +10,7 @@ const WrapperTable = ({ children }) => {
       <table>
         <thead>
           <tr>
+            <th>Id</th>
             <th>User</th>
             <th>Gender</th>
             <th>Job Title</th>
