@@ -1,43 +1,49 @@
-import { useState } from "react";
+import { useCallback } from "react";
 import "./App.css";
-import faker from "faker";
-import Pagination from "./components/Pagination";
+import WrapperListComponent from "./components/list/WrapperListComponent";
+import ListItem from "./components/list/ListItem";
+import WrapperTable from "./components/table/WrapperTable";
+import ListTableItem from "./components/table/ListTableItem";
+import useAsync from "./hooks/useAsync";
+import usePaginate from "./hooks/usePaginate";
 
-function getUsers(number = 19) {
-  let users = [];
-  for (let i = 0; i < number; i++) {
-    users.push(getUser(i));
-  }
-  console.log(users);
-  return users;
-}
-function getUser(index) {
-  let user = {};
-  user.id = index + 1;
-  user.firstName = faker.name.firstName();
-  user.lastName = faker.name.lastName();
-  user.jobTitle = faker.name.jobTitle();
-  user.prefix = faker.name.prefix();
-  user.suffix = faker.name.suffix();
-  user.jobArea = faker.name.jobArea();
-
-  user.phone = faker.phone.phoneNumber();
-  return user;
-}
-
-function User({ user = {} }) {
-  return (
-    <h1>
-      {user.id} - {user.firstName} {user.lastName}
-    </h1>
-  );
-}
+const pageOptions = {
+  defaultPageSize: 5,
+};
 
 function App() {
-  const [users, _setUsers] = useState(getUsers);
+  const getUsers = useCallback(() => {
+    return fetch(`${process.env.REACT_APP_API_URL}/users`).then((res) =>
+      res.json()
+    );
+  }, []);
+  const { status, value: users, error } = useAsync(getUsers);
+  const { Wrapper, currentPagedata } = usePaginate(users, pageOptions);
   return (
     <div className="App">
-      <Pagination data={users} Component={User} />
+      {status === "idle" && <div>Start your journey by clicking a button</div>}
+      {status === "pending" && (
+        <div>
+          <h1>Loading...</h1>
+        </div>
+      )}
+      {status === "success" && (
+        <>
+          <Wrapper />
+          <WrapperListComponent>
+            {currentPagedata.map((data, index) => (
+              <ListItem key={index} user={data} />
+            ))}
+          </WrapperListComponent>
+          <WrapperTable>
+            {currentPagedata.map((data, index) => (
+              <ListTableItem key={index} user={data} />
+            ))}
+          </WrapperTable>
+          <Wrapper />
+        </>
+      )}
+      {status === "error" && <div>{error}</div>}
     </div>
   );
 }
