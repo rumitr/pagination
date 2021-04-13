@@ -14,9 +14,9 @@ const pageOptions = {
 
 function App() {
   const getUsers = useCallback(() => {
-    return fetch(`${process.env.REACT_APP_API_URL}/users`).then((res) =>
-      res.json()
-    );
+    return fetch(
+      "https://elegant-hodgkin-dac2fb.netlify.app/api/users"
+    ).then((res) => res.json());
   }, []);
   const { status, value: users, error } = useAsync(getUsers);
   const { Wrapper, currentPagedata } = usePaginate(users, pageOptions);
